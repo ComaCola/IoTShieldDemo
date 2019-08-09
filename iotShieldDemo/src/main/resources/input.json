@@ -1,0 +1,7 @@
+{"type": "profile_create", "model_name": "iPhone", "default_policy": "block", "whitelist": ["facebook.com"], "blacklist": [], "timestamp": 1562827784}
+{"type": "request", "request_id": "66d03a6947c048009f0b34260f35f3bd", "model_name": "iPhone", "device_id": "7fcbe1dff23947e5b3db8a20c1a2f8c0", "url": "facebook.com", "timestamp": 1562827794}
+{"type": "request", "request_id": "4cbe5e573971474b8de99f9af24b8949", "model_name": "iPhone", "device_id": "7fcbe1dff23947e5b3db8a20c1a2f8c0", "url": "bad_site_2.com", "timestamp": 1562827884}
+{"type": "profile_update", "model_name": "iPhone", "whitelist": ["other_site.com"], "timestamp": 1562827984}
+{"type": "request", "request_id": "fe5328eead7e417ab94413afbae907fd", "model_name": "iPhone", "device_id": "7fcbe1dff23947e5b3db8a20c1a2f8c0", "url": "facebook.com", "timestamp": 1562828784}
+{"type": "profile_update", "model_name": "iPhone", "whitelist": ["facebook.com"], "timestamp": 1562828785}
+{"type": "request", "request_id": "288e1ec951384e6cae2b0de7520afef7", "model_name": "iPhone", "device_id": "7fcbe1dff23947e5b3db8a20c1a2f8c0", "url": "bad_site.com", "timestamp": 1563827784}
