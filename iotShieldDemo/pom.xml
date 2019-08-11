@@ -12,7 +12,7 @@
   <artifactId>com.shield.iot</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>com.shield.iot</name>
-  <description>IoT shield demo project for Spring Boot</description>
+  <description>IoT shield demo project by Spring Boot</description>
 
   <properties>
     <java.version>1.8</java.version>
@@ -35,12 +35,7 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.8</version>
-      <type>jar</type>
-    </dependency>
+
 
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
@@ -52,6 +47,13 @@
       <groupId>com.vaadin.external.google</groupId>
       <artifactId>android-json</artifactId>
       <version>0.0.20131108.vaadin1</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.8</version>
+      <scope>provided</scope>
       <type>jar</type>
     </dependency>
   </dependencies>

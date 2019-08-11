@@ -13,4 +13,5 @@ public interface IProfileDao {
 
   void update(Profile profile);
 
+  void removeAll();
 }

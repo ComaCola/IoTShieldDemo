@@ -1,87 +1,131 @@
 package com.shield.iot.facade;
 
-import com.shield.iot.dao.IRequestResponseDao;
-import com.shield.iot.model.Profile;
+import com.shield.iot.dao.IRequestDao;
 import com.shield.iot.model.Request;
-import com.shield.iot.model.Response;
+import com.shield.iot.utils.BuilderUtils;
 import java.util.List;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RequestFacadeImpl implements IRequestFacade {
 
-  private final IRequestResponseDao dao;
+  private final IRequestDao requestDao;
 
   private final IProfileFacade profileFacade;
 
+  private final IResponseFacade responseFacade;
+
   @Autowired
-  public RequestFacadeImpl(IRequestResponseDao dao, IProfileFacade profileFacade) {
-    this.dao = dao;
+  public RequestFacadeImpl(IRequestDao requestDao, IProfileFacade profileFacade,
+          IResponseFacade responseFacade) {
+    this.requestDao = requestDao;
     this.profileFacade = profileFacade;
+    this.responseFacade = responseFacade;
   }
 
   @Override
-  public void analyze(Request request) {
-    System.out.println(request.getModelName());
-    Profile profile = profileFacade.load(request.getModelName());
+  public void save(Request request) {
+    requestDao.save(request);
+  }
 
-    // if profile does not exist, request is blocked, device quarantined
-    if (profile == null) {
-      block(request);
-      return;
-    }
-    if (profile.getDefaultPolicy().equals("allow")) {
-      // if url is not in black list, then, by default policy, url is allowed
-      if (!profile.getBlackList().contains(request.getUrl())) {
-        allow(request);
-      } else {
-        // if url is in black list, this request is blocked and device is quarantined
-        block(request);
+  @Override
+  public List<Request> loadAll() {
+    return requestDao.loadAll();
+  }
+
+  @Override
+  public void removeAll() {
+    requestDao.removeAll();
+  }
+
+  /**
+   * Analyzing item by item from plain text list.
+   *
+   * @param list
+   */
+  @Override
+  public void analyzeAllSerial(List<String> list) {
+    JSONObject o;
+    JSONParser p = new JSONParser();
+    for (String item : list) {
+      try {
+        o = (JSONObject) p.parse(item);
+        analyzeRequest(o);
+      } catch (ParseException | NumberFormatException | ClassCastException e) {
+        e.printStackTrace();
       }
+    }
 
-    } else if (profile.getDefaultPolicy().equals("block")) {
-      // if url is not in white list, then, by default policy, this url is blocked, device - quarantined
-      if (!profile.getWhiteList().contains(request.getUrl())) {
-        block(request);
-      } else {
-        allow(request);
+  }
+
+  /**
+   * First registering all profiles data, then analyzing all requests.
+   *
+   * @param list
+   */
+  @Override
+  public void analyzeAllFirstProfileSecondRequest(List<String> list) {
+    JSONObject o;
+    JSONParser p = new JSONParser();
+    for (String item : list) {
+      try {
+        o = (JSONObject) p.parse(item);
+        registerData(o);
+      } catch (ParseException | NumberFormatException | ClassCastException e) {
+        e.printStackTrace();
       }
+    }
+    responseFacade.analyzeAll(loadAll());
+  }
+
+  /**
+   * Registering profile's data or analyzing request.
+   *
+   * @param o
+   */
+  private void analyzeRequest(JSONObject o) {
+    switch (o.get("type").toString()) {
+
+      case "profile_create":
+        profileFacade.create(BuilderUtils.buildProfile(o));
+        break;
+
+      case "profile_update":
+        profileFacade.update(BuilderUtils.buildProfile(o));
+        break;
+
+      case "request":
+        Request request = BuilderUtils.buildRequest(o);
+        save(request);  // every request's data is saved
+        responseFacade.analyze(request);  // request analysis
+        break;
     }
   }
 
-  private void allow(Request request) {
-    Response response = Response.builder()
-            .action("allow")
-            .id(request.getRequestId())
-            .responseType("request")
-            .build();
-    dao.save(response);
-  }
+  /**
+   * Registers all data (profile creating/updating, requests saving), but no
+   * analysis is done.
+   *
+   * @param o
+   */
+  private void registerData(JSONObject o) {
+    switch (o.get("type").toString()) {
 
-  private void block(Request request) {
-    Response response = Response.builder()
-            .action("block")
-            .id(request.getRequestId())
-            .responseType("request")
-            .build();
-    Response responseDevice = Response.builder()
-            .action("quarantine")
-            .id(request.getDeviceId())
-            .responseType("device")
-            .build();
-    dao.save(response);
-    dao.save(responseDevice);
-  }
+      case "profile_create":
+        profileFacade.create(BuilderUtils.buildProfile(o));
+        break;
 
-  @Override
-  public void save(Response response) {
-    dao.save(response);
-  }
+      case "profile_update":
+        profileFacade.update(BuilderUtils.buildProfile(o));
+        break;
 
-  @Override
-  public List<Response> loadAll() {
-    return dao.loadAll();
+      case "request":
+        save(BuilderUtils.buildRequest(o));  // every request's data is saved, but request is not analyzed
+        break;
+    }
   }
-
 }

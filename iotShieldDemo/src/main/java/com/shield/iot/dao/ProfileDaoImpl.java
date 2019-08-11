@@ -2,15 +2,19 @@ package com.shield.iot.dao;
 
 import com.shield.iot.model.Profile;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Repository;
 
+/**
+ * For profile CRUD operations. For storage too.
+ */
 @Repository
 public class ProfileDaoImpl implements IProfileDao {
 
-  private Map<String, Profile> profileMap = new HashMap<>();
+  // data storage
+  private Map<String, Profile> profileMap = new LinkedHashMap<>();
 
   @Override
   public Profile load(String modelName) {
@@ -33,9 +37,18 @@ public class ProfileDaoImpl implements IProfileDao {
     if (p == null) {
       create(profile);
     } else {
-      profile.setWhiteList(profile.getWhiteList());
-      profile.setBlackList(profile.getBlackList());
+      if (profile.getWhiteList() != null) {
+        p.setWhiteList(profile.getWhiteList());
+      }
+      if (profile.getBlackList() != null) {
+        p.setBlackList(profile.getBlackList());
+      }
     }
+  }
+
+  @Override
+  public void removeAll() {
+    profileMap.clear();
   }
 
 }

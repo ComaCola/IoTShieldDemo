@@ -1,7 +1,8 @@
 package com.shield.iot.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +11,14 @@ import lombok.Data;
 @Builder
 public class Profile implements Serializable {
 
+  @JsonProperty(value = "model_name")
   private String modelName;
-  private String defaultPolicy;
-  private List<String> whiteList;
-  private List<String> blackList;
-  private Date date;
-
+  @JsonProperty(value = "default")
+  private String defaultPolicy;   // allow, block
+  @JsonProperty(value = "white_list")
+  private List<String> whiteList; // urls
+  @JsonProperty(value = "black_list")
+  private List<String> blackList; // urls
+  @JsonProperty(value = "timestamp")
+  private Timestamp timestamp;
 }

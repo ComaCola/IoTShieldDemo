@@ -1,14 +1,14 @@
 package com.shield.iot.model;
 
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
-public class Response {
+@SuperBuilder
+public class Response implements Serializable {
 
-  private String responseType; // for request or device
-  private String id;
-  private String action;  // llow, block, quarantine
-
+  @JsonProperty(value = "action")
+  private String action;  // allow, block, quarantine
 }

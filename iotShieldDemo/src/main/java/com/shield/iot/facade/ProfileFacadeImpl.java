@@ -36,4 +36,8 @@ public class ProfileFacadeImpl implements IProfileFacade {
     profileDao.update(profile);
   }
 
+  @Override
+  public void removeAll() {
+    profileDao.removeAll();
+  }
 }

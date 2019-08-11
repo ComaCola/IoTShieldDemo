@@ -13,4 +13,5 @@ public interface IProfileFacade {
 
   void update(Profile profile);
 
+  void removeAll();
 }
